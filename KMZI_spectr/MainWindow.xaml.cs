@@ -44,6 +44,13 @@ namespace KMZI_spectr
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
+        private int Nf(int[] WA)
+        {
+            int max =Math.Abs( WA[0]);
+            foreach (int x in WA)
+                if (max < Math.Abs(x)) max = Math.Abs(x);
+            return (int)Math.Pow(2, NumberOfVariables - 1) - max / 2;
+        }
         private int[] spectrF(int[] vec)
         {
             int[] spectr = new int[vec.Length];
