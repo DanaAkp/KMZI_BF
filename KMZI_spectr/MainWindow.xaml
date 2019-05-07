@@ -19,7 +19,7 @@
             <TextBox Width="257" x:Name="tbFunc"/>
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <Button x:Name="btnFurie" Click="BtnFurie_Click" Content="Фурье" Margin="10,0,10,0"/>
+            <Button x:Name="btnFurie" Click="BtnFurie_Click" Content="Кнопка" Margin="10,0,10,0"/>
         </StackPanel>
         <TextBlock x:Name="tblRes" Grid.Row="4"/>
     </Grid>
