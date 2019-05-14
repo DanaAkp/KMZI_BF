@@ -20,6 +20,7 @@ namespace KMZI_spectr
     /// </summary>
     public partial class MainWindow : Window
     {
+        string AlphabetENG = "abcdefghijklmnopqrstuvwxyz";
         int NumberOfVariables;
         public MainWindow()
         {
@@ -32,15 +33,17 @@ namespace KMZI_spectr
             {
                 int[] vec = GetVector(tbFunc.Text.Trim());
                 if (!CheckVector(vec)) throw new Exception("Ошибка");
-                tblRes.Text = "Вес равен " + weight(vec)+"\n";
+                tblRes.Text = "Вес равен " + weight(vec)+"\nСпектр Фурье: \n";
                 int[] Furie = spectrF(vec);
                 int[] WA = spectrWA(vec);
 
                 for (int i = 0; i < Furie.Length; i++)
                     tblRes.Text += Furie[i] + " ";
-                tblRes.Text += "\n";
+                tblRes.Text += "\nСпектр Уолша-Адамара: \n";
                 for (int i = 0; i < Furie.Length; i++)
                     tblRes.Text += WA[i] + " ";
+                tblRes.Text += "\nНелинейность равна " + Nf(WA);
+                tblRes.Text += "\nАНФ: " + ANF(vec);
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
@@ -134,6 +137,81 @@ namespace KMZI_spectr
                     return true;
                 }
             }
+            return false;
+        }
+        private string ANF(int[] vec)
+        {
+            string s = "";
+            int deg = 0;
+            int[] res = new int[vec.Length];
+            int[] buf = vec;
+            int k = vec.Length;
+            int j = 0;
+            while (k != 0)
+            {
+                res[j] = buf[0];
+                for (int i = 0; i < k - 1; i++)
+                {
+                    buf[i] = buf[i] + buf[i + 1];
+                    buf[i] %= 2;
+                }
+                k--; j++;
+            }
+            if (res[0] == 1)
+                s += "1 +";
+            for (int i = 1; i < vec.Length; i++)
+            {
+                bool check = false;
+                int c = 0;
+                if (res[i] == 1)
+                {
+                    string binaryCode = Convert.ToString(i, 2);
+                    string num;
+                    if (binaryCode.Length != NumberOfVariables)
+                    {
+                        num = new string('0', NumberOfVariables - binaryCode.Length);
+                        num += binaryCode;
+                    }
+                    else num = binaryCode;
+                    for (j = 0; j < num.Length; j++)
+                    {
+                        if (num[j] == '1')
+                        {
+                            s += AlphabetENG[j].ToString();
+                            check = true;
+                            c++;
+                        }
+                    }
+                }
+                if (c > deg) deg = c; 
+                if (check)
+                    s += " +";
+            }
+            string t = "";
+            for (int i = 0; i < s.Length-1; i++) t += s[i];
+            t += "\nСтепень равна " + deg;
+            if (deg == NumberOfVariables) t += "\nФункция обладает максимальной алгебраической степенью";
+            else t += "\nФункция не обладает максимальной алгебраической степенью";
+            return t;
+        }
+        private int KorrIm(int[] vec)
+        {
+            int m = 0;
+            for (int i = 1; i < vec.Length - 1; i++)
+            {
+                int[] f = getBinaryCode(i);
+                int newNumOfVar = 0;
+                for (int j = 0; j < f.Length; j++)
+                {
+                    if (f[j] == 0) newNumOfVar++;
+                }
+                
+            }
+            return m;
+        }
+        private bool IsBalanced(int[] vec)
+        {
+            if (weight(vec) == vec.Length / 2) return true;
             return false;
         }
     }
