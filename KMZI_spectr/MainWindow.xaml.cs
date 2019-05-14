@@ -44,6 +44,7 @@ namespace KMZI_spectr
                     tblRes.Text += WA[i] + " ";
                 tblRes.Text += "\nНелинейность равна " + Nf(WA);
                 tblRes.Text += "\nАНФ: " + ANF(vec);
+                KorrIm(vec);
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
@@ -196,16 +197,37 @@ namespace KMZI_spectr
         }
         private int KorrIm(int[] vec)
         {
+            int[] polin = polinom(vec);
             int m = 0;
+
+
             for (int i = 1; i < vec.Length - 1; i++)
             {
-                int[] f = getBinaryCode(i);
-                int newNumOfVar = 0;
-                for (int j = 0; j < f.Length; j++)
+                int[] f = getBinaryCode(i);//массив с фиксированными переменными, 1 -фикс
+                int[] res = new int[vec.Length];
+                for (int j = 0; j < vec.Length; j++)//идет по наборам вектора значений
                 {
-                    if (f[j] == 0) newNumOfVar++;
+                    int[] nabor = getBinaryCode(j);//набор значений всех переменных
+
+                    for (int l = 1; l < vec.Length; l++)//идет по массиву многочлена
+                    {
+                        if (polin[l] == 1)
+                        {
+                            int[] x = getBinaryCode(l);
+                            int buf = 1;
+                            for (int k = 0; k < nabor.Length; k++)
+                            {
+                                if (f[k] == 1)
+                                    buf *= f[k] * x[k];
+                                else
+                                    buf *= nabor[k] * x[k];
+                            }
+                            res[j] += buf;
+                            res[j] %= 2;
+                        }
+                    }
                 }
-                
+                int b = 0;
             }
             return m;
         }
@@ -213,6 +235,24 @@ namespace KMZI_spectr
         {
             if (weight(vec) == vec.Length / 2) return true;
             return false;
+        }
+        private int[] polinom(int[] vec)
+        {
+            int[] res = new int[vec.Length];
+            int[] buf = vec;
+            int k = vec.Length;
+            int j = 0;
+            while (k != 0)
+            {
+                res[j] = buf[0];
+                for (int i = 0; i < k - 1; i++)
+                {
+                    buf[i] = buf[i] + buf[i + 1];
+                    buf[i] %= 2;
+                }
+                k--; j++;
+            }
+            return res;
         }
     }
 }
